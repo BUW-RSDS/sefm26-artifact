@@ -1,0 +1,9 @@
+format_version: '2.0'
+input_files:
+  - ../common/
+  - 'Math_public_static_long_java_lang_Math_max_long_long'
+properties:
+  - property_file: ../properties/valid-assert.prp
+    expected_verdict: false
+options:
+  language: Java

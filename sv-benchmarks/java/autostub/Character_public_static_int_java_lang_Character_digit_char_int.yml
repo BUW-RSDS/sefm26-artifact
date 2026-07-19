@@ -1,0 +1,9 @@
+format_version: '2.0'
+input_files:
+  - ../common/
+  - 'Character_public_static_int_java_lang_Character_digit_char_int'
+properties:
+  - property_file: ../properties/valid-assert.prp
+    expected_verdict: false
+options:
+  language: Java

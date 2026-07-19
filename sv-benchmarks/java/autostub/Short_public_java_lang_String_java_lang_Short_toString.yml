@@ -1,0 +1,9 @@
+format_version: '2.0'
+input_files:
+  - ../common/
+  - 'Short_public_java_lang_String_java_lang_Short_toString'
+properties:
+  - property_file: ../properties/valid-assert.prp
+    expected_verdict: false
+options:
+  language: Java

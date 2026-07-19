@@ -1,0 +1,58 @@
+# This file is part of the competition environment.
+#
+# SPDX-FileCopyrightText: 2011-2025 Dirk Beyer <https://www.sosy-lab.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+#Modified by Malte Mues starting March 2025
+
+Bootstrap: docker
+From: ubuntu:24.04
+
+%environment
+       export DEBIAN_FRONTEND=noninteractive
+
+%post
+       apt-get update && apt-get install -y tzdata
+       ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+       dpkg-reconfigure --frontend noninteractive tzdata
+       
+       apt-get install -y \
+              clang \
+              clang-14 \
+              clang-format \
+              clang-tidy \
+              fuse-overlayfs \
+              gcc \
+              lcov \
+              libc6-dev \
+              libclang-cpp-dev \
+              libclang-dev \
+              libflint-dev \
+              libgmp-dev \
+              libgomp1 \
+              libmpfr-dev \
+              libmpfr6 \
+              llvm \
+              llvm-14 \
+              llvm-dev \
+              make \
+              openjdk-11-jre-headless \
+              openjdk-17-jdk-headless \
+              openjdk-17-jre-headless \
+              openjdk-21-jre-headless \
+              openjdk-8-jdk-headless \
+              openjdk-8-jre-headless \
+              python3 \
+              python3-bitstring \
+              python3-clang \
+              python3-docker \
+              python3-graphviz \
+              python3-jsonschema \
+              python3-lxml \
+              python3-pycparser \
+              python3-requests \
+              python3-tqdm \
+              python3-yaml \
+              zlib1g-dev
+

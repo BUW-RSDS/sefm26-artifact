@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE benchmark PUBLIC "+//IDN sosy-lab.org//DTD BenchExec benchmark 1.9//EN" "https://www.sosy-lab.org/benchexec/benchmark-1.9.dtd">
+  <benchmark tool="gdart" timelimit="15 min" memlimit="15 GB" cpuCores="8">
+  <resultfiles>**.graphml</resultfiles>
+  <rundefinition name="sv-comp20_prop-reachsafety_java">
+    <tasks name="ReachSafety-Java">
+      <includesfile>../sv-benchmarks/java/ReachSafety-Java.set</includesfile>
+      <propertyfile>../sv-benchmarks/java/properties/valid-assert.prp</propertyfile>
+    </tasks>
+  </rundefinition>
+</benchmark>

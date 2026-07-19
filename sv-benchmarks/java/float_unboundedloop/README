@@ -1,0 +1,27 @@
+// This file is part of the SV-Benchmarks collection of verification tasks:
+// https://gitlab.com/sosy-lab/benchmarking/sv-benchmarks
+//
+// SPDX-FileCopyrightText: 2025 Hassan Mousavi <University of Tehran>
+// SPDX-License-Identifier: Apache-2.0
+Benchmark Set: float-UnboundedLoop (Java)
+Benchmark Name: Adjustable-Inner-Count-Halving
+Description:
+This benchmark is part of the "float-UnboundedLoop" collection proposed
+for SV-COMP 2026. It focuses on verifying floating-point computations
+that involve unbounded or data-dependent loops, where the number of
+iterations cannot be statically determined.
+
+Purpose:
+The benchmark is designed to evaluate the capability of Java verification
+tools (such as JBMC, JayHorn, and Jay-Sym) to reason about numeric
+operations performed inside unbounded control structures. Typical patterns
+include threshold-based switching, rounding, normalization, and
+accumulation over floating-point variables.
+
+Expected Property:
+ReachSafety-assert (all assertions must hold)
+
+Safety Note:
+All benchmarks in this collection are SAFE with respect to the declared
+properties — both 'valid-assert' and 'no-runtime-exception'. These programs
+do not violate any safety assertions and are free from runtime exceptions.

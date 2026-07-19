@@ -1,0 +1,7 @@
+paper_results/*.csv
+paper_results/*.tex
+paper_results/*.pdf
+paper_results/*.aux
+paper_results/*.log
+figure3.pdf
+gdart/

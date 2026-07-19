@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+
+# This file is part of BenchExec, a framework for reliable benchmarking:
+# https://github.com/sosy-lab/benchexec
+#
+# SPDX-FileCopyrightText: 2007-2020 Dirk Beyer <https://www.sosy-lab.org>
+# SPDX-FileCopyrightText: 2024 Levente Bajczi
+# SPDX-FileCopyrightText: 2026 Malte Mues
+# SPDX-FileCopyrightText: Critical Systems Research Group
+# SPDX-FileCopyrightText: Budapest University of Technology and Economics <https://www.ftsrg.mit.bme.hu>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+import logging
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+import benchexec.benchexec
+import benchexec.tools
+import benchexec.util
+
+sys.dont_write_bytecode = True  # prevent creation of .pyc files
+
+# Add ./benchmark/tools to __path__ of benchexec.tools package
+# such that additional tool-wrapper modules can be placed in this directory.
+benchexec.tools.__path__ = [
+    os.path.join(os.path.dirname(__file__), "benchmark", "tools")
+] + benchexec.tools.__path__
+
+
+class Benchmark(benchexec.benchexec.BenchExec):
+    """
+    An extension of BenchExec to execute benchmarks using SLURM,
+    optionally via apptainer.
+    """
+
+    def create_argument_parser(self):
+        parser = super(Benchmark, self).create_argument_parser()
+
+        slurm_args = parser.add_argument_group("Options for using SLURM")
+        slurm_args.add_argument(
+            "--slurm",
+            dest="slurm",
+            action="store_true",
+            help="Use SLURM to execute benchmarks.",
+        )
+        slurm_args.add_argument(
+            "--buw-array",
+            dest="buw_array",
+            action="store_true",
+            help="Use SLURM array jobs to execute benchmarks.",
+        )
+        slurm_args.add_argument(
+            "--slurm-array",
+            dest="slurm_array",
+            action="store_true",
+            help="Use SLURM array jobs to execute benchmarks.",
+        )
+        slurm_args.add_argument(
+            "--apptainer",
+            dest="apptainer",
+            type=str,
+            help="The path to the apptainer .sif file to use.",
+        )
+        slurm_args.add_argument(
+            "--scratchdir",
+            dest="scratchdir",
+            type=str,
+            default="./",
+            help="The directory where temporary directories can be created for use within apptainer.",
+        )
+        slurm_args.add_argument(
+            "--retry-killed",
+            dest="retry",
+            type=int,
+            default="0",
+            help="Retry killed jobs this many times. Use -1 for unbounded retry attempts (cannot be used with --slurm-array).",
+        )
+        slurm_args.add_argument(
+            "--aggregation-factor",
+            dest="aggregation_factor",
+            type=int,
+            default="1000",
+            help="Aggregation factor for batch jobs (this many tasks will run in a single SLURM array).",
+        )
+        slurm_args.add_argument(
+            "--batch-size",
+            dest="batch_size",
+            type=int,
+            default="5000",
+            help="Split run sets into batches of at most this size. Helpful in avoiding errors with script sizes.",
+        )
+        # slurm_args.add_argument(
+        #     "--parallelization",
+        #     dest="concurrency_factor",
+        #     type=int,
+        #     default="4",
+        #     help="Run this many tasks at once in one job.",
+        # )
+        slurm_args.add_argument(
+            "--overtime-factor",
+            dest="overtime_factor",
+            type=float,
+            default="1.1",
+            help="Factor which by to scale timelimits to overapproximate CPU time limit with walltime limit.",
+        )
+        slurm_args.add_argument(
+            "--continue-interrupted",
+            dest="continue_interrupted",
+            action="store_true",
+            help="Continue a previously interrupted job.",
+        )
+        slurm_args.add_argument(
+            "--copy-tool",
+            dest="copy_tool",
+            action="store_true",
+            help="Make a copy of the tool folder in the container.",
+        )
+        slurm_args.add_argument(
+            "--generate-only",
+            dest="generate_only",
+            action="store_true",
+            help="Only generate the SLURM array description, don't run it.",
+        )
+        slurm_args.add_argument(
+            "--benchdefs_folder",
+            dest="mount_point",
+            type=str,
+            help="Start work directory inside the container. For SV-COMP it should be the benchdefs folder.",
+        )
+
+        return parser
+
+    def load_executor(self):
+        if self.config.slurm_array:
+            from slurm import arrayexecutor as executor
+        elif self.config.buw_array:
+            from slurm import buwarrayexecutor as executor
+        elif self.config.slurm:
+            logging.error(
+                "Single-job-based SLURM-integration is no longer supported. Use --slurm-array instead."
+            )
+            from slurm import slurmexecutor as executor
+        else:
+            logging.warning(
+                "SLURM flag was not specified. Benchexec will be executed only on the local machine."
+            )
+            executor = super(Benchmark, self).load_executor()
+
+        return executor
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+    benchexec.benchexec.main(Benchmark())

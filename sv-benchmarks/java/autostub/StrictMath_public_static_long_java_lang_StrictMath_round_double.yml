@@ -1,0 +1,9 @@
+format_version: '2.0'
+input_files:
+  - ../common/
+  - 'StrictMath_public_static_long_java_lang_StrictMath_round_double'
+properties:
+  - property_file: ../properties/valid-assert.prp
+    expected_verdict: false
+options:
+  language: Java

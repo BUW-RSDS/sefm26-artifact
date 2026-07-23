@@ -367,8 +367,9 @@ def execute_batch(
                 task_lines = ["declare -a jobs=(\n"]
                 task_count = 0
                 for i, (_, run) in enumerate(bins[bin]):
-                    os.makedirs(os.path.join(bintmpdir, f"tmp{i}", "upper"))
-                    os.makedirs(os.path.join(bintmpdir, f"tmp{i}", "work"))
+                    os.makedirs(os.path.join(bintmpdir, f"tmp{i}"))
+                    # os.makedirs(os.path.join(bintmpdir, f"tmp{i}", "upper"))
+                    # os.makedirs(os.path.join(bintmpdir, f"tmp{i}", "work"))
                     task_lines.extend(
                         [
                             str(
@@ -401,6 +402,9 @@ def execute_batch(
                 f"""COMMAND="$(echo $COMMAND | sed 's;../sv-benchmarks;{benchmark.config.mount_point}/sv-benchmarks;g' )"\n"""
             )
             batch_lines.extend(
+                f"""COMMAND="$(echo $COMMAND | sed 's; sv-benchmarks/; {benchmark.config.mount_point}/sv-benchmarks/;g' )"\n"""
+            )
+            batch_lines.extend(
                 f"""printf '\n-NEW-\n\n%s\n\n--------------------------\n\n\n' "$COMMAND"> runlog.out\n"""
             )
             batch_lines.extend(
@@ -409,9 +413,9 @@ def execute_batch(
                     f"-t {limits.srun_timelimit()} -c {limits.cpus} "
                     f"--mem {limits.mem_in_mega_as_str()}M --threads-per-core=1 "
                     "--ntasks=1 apptainer exec "
-                    f"-B {benchmark.config.mount_point}:/lower --no-home "
-                    f"-B {bintmpdir}/tmp$SLURM_ARRAY_TASK_ID:/overlay "
-                    "--fusemount 'container:fuse-overlayfs -o lowerdir=/lower -o upperdir=/overlay/upper -o workdir=/overlay/work /beegfs/mues/sv-comp/bench-defs/' "
+                    f"-B {benchmark.config.mount_point} "
+                    # f"-B {bintmpdir}/tmp$SLURM_ARRAY_TASK_ID:/overlay "
+                    # "--fusemount 'container:fuse-overlayfs -o lowerdir=/lower -o upperdir=/overlay/upper -o workdir=/overlay/work /beegfs/mues/sv-comp/bench-defs/' "
                     f'{absolut_image_path} sh -c "$COMMAND" &>> runlog.out\n'
                 )
             )
